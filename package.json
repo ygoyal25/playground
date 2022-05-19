@@ -1,0 +1,24 @@
+{
+  "name": "playground",
+  "version": "1.0.0",
+  "description": "A playgroud project to try different things",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Yashendra Goyal",
+  "license": "ISC",
+  "dependencies": {
+    "@azure/arm-synapse": "^8.0.0",
+    "@azure/identity": "^2.0.4",
+    "@azure/storage-blob": "^12.9.0",
+    "@azure/synapse-access-control": "^1.0.0-beta.3",
+    "@azure/synapse-artifacts": "^1.0.0-beta.10",
+    "parquetjs": "^0.11.2",
+    "parquets": "^0.10.10",
+    "tedious": "^14.5.0"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^6.3.1"
+  }
+}
