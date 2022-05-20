@@ -34,7 +34,6 @@ async function connect() {
 
 async function queryTable(connection, query) {
     return new Promise((res, rej) => {
-        console.time('Query Time');
         // const query = `SELECT
         //     TOP 1000 *
         //     FROM
@@ -53,7 +52,7 @@ async function queryTable(connection, query) {
                 return json;
             }) || [];
             // console.log(jsonData.length);
-            console.timeEnd('Query Time');
+            console.log('Query Completed');
             // json
         });
         request.setTimeout(45000);
