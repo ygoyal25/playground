@@ -1,6 +1,10 @@
 const loader = document.getElementsByClassName('loader')[0];
 function search() {
     console.log('Searching...');
+    var tbl = document.getElementsByTagName('table')[0];
+    if (tbl) {
+        tbl.remove();
+    }
     loader.setAttribute('style', 'display: block');
     const file = document.querySelector('#search').value;
 
@@ -38,12 +42,7 @@ function search() {
     .then(data => {
         return data.json()
     })
-    .then(json => {
-        console.log(json);
-        var tbl = document.getElementsByTagName('table')[0];
-        if (tbl) {
-            tbl.remove();
-        }        
+    .then(json => {        
         tableCreate(json.data);
     })
     .catch(e => {
@@ -58,7 +57,20 @@ function tableCreate(data) {
     tbl.setAttribute('class', 'table');
     tbl.style.width = '100%';
     tbl.setAttribute('border', '1');
+    var thd = document.createElement('thead');
     var tbdy = document.createElement('tbody');
+
+    var tr = document.createElement('tr');
+    ['file', 'extension', 'fileType', 'changeType', 'size', 'workingEnvironmentId', 'volumeId', 'snapshotId']
+    .forEach(item => {
+        var th = document.createElement('th');
+        th.setAttribute('scope', 'col');
+        th.appendChild(document.createTextNode(item));
+        tr.appendChild(th)
+    });
+
+    thd.appendChild(tr);
+
     for (var i = 0; i < data.length; i++) {
         const row = data[i];
         var tr = document.createElement('tr');
@@ -66,6 +78,7 @@ function tableCreate(data) {
 
         for(const col in row) {
             var td = document.createElement('td');
+            td.setAttribute('scope', 'col');
             td.appendChild(document.createTextNode(row[col]))
             tr.appendChild(td)
         }
@@ -74,6 +87,7 @@ function tableCreate(data) {
         // }
         tbdy.appendChild(tr);
     }
+    tbl.appendChild(thd);
     tbl.appendChild(tbdy);
     body.appendChild(tbl)
 }
