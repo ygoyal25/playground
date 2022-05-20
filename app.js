@@ -1,46 +1,46 @@
-const parquet = require('parquetjs');
-const { faker } = require('@faker-js/faker');
-
-const schema = new parquet.ParquetSchema({
-    name: { type: 'UTF8' },
-    companyName: { type: 'UTF8' },
-    experience: { type: 'INT64' },
-    salary: { type: 'INT64' },
-    date: { type: 'TIMESTAMP_MILLIS' }
-});
-
-async function createParquet() {
-    try {
-        let j = 0;
-        while(j < 1) {
-            j++;
-            const companyName = faker.company.companyName().split(' ')[0].replace(',', '');
-            console.log(companyName);
-            const writer = await parquet.ParquetWriter.openFile(schema, `employees-${companyName}.parquet`);
-            let i = 1000000 * 100;
-            while(i >= 0) {
-                i--;
-                const data = {
-                    name: faker.name.firstName(),
-                    companyName,
-                    experience: 10 * (Math.random()),
-                    salary: 30 * (Math.random()),
-                    date: new Date()
-                };
-                console.log(i);
-                await writer.appendRow(data);
-            }
-            writer.close();
-        }
-        return;
-    } catch(e) {
-        console.log(e);
-    }
-}
+const express = require('express');
+const { connect, queryTable } = require('./utils/synapse_connect');
+const app = express();
 
 async function main() {
-    await createParquet();
-    console.log('I am here');
+    const connection = await connect();
+    app.set('view engine', 'ejs');
+    app.set('views', './views');
+    app.use('/static', express.static('public'));
+
+    app.get('/', function(req, res){
+        res.render('index');
+    })
+
+    app.get('/search', async function(req, res) {
+        console.log(req.query);
+        let query = `SELECT TOP (1000) [file]
+        ,[extension]
+        ,[fileType]
+        ,[changeType]
+        ,[size]
+        ,[workingEnvironmentId]
+        ,[volumeId]
+        ,[snapshotId]
+        FROM [dbo].[cbs_changes_prt_view] WHERE`;
+        
+        for(const key in req.query) {
+            const val = req.query[key];
+            if (key === 'file') {
+                query += ` [file] LIKE '%${val}%'`;
+            } else {
+                query += `AND [${key}] = ${val}`
+            }
+        }
+        
+        console.log(query);
+
+        const data = await queryTable(connection, query);
+
+        res.send({ data })
+    })
+
+    app.listen(3000, () => console.log('Server started on port 3000'));
 }
 
 main()

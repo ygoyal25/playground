@@ -3,7 +3,7 @@ async function connect() {
     console.log('Starting...');
     return new Promise((res, rej) => {
         const config = { 
-            server: 'yg-synapse-workspace.sql.azuresynapse.net',
+            server: 'yg-synapse-workspace-ondemand.sql.azuresynapse.net',
             authentication: { 
                 // type: 'default', 
                 type: 'azure-active-directory-default', 
@@ -13,7 +13,7 @@ async function connect() {
             }, 
             options: {
                 encrypt: true, 
-                database: 'cbspool',
+                database: 'cbs_changes',
                 rowCollectionOnRequestCompletion: true
             } 
         };
@@ -32,44 +32,36 @@ async function connect() {
     
 }
 
-async function queryTable() {
-    const connection = await connect();
-    console.time('Query Time');
-    // const query = `SELECT
-    //     TOP 1000 *
-    //     FROM
-    //         OPENROWSET(
-    //             BULK 'https://ygazuredatalake.dfs.core.windows.net/ygdatalakesfile/changes/**',
-    //             FORMAT = 'PARQUET'
-    //         ) AS [result] WHERE result.[file] LIKE 'DEPTH' AND changeType = 2`
-    const query = `SELECT TOP (100) [file]
-    ,[extension]
-    ,[fileType]
-    ,[changeType]
-    ,[inode]
-    ,[size]
-    ,[ctime]
-    ,[mtime]
-    ,[crtime]
-    ,[workingEnvironmentId]
-    ,[volumeId]
-    ,[snapshotId]
-    FROM [dbo].[changes_catalog]`;
-    var request = new Request(query, function(err, rowCount, rows) {
-        console.log(err, rowCount, rows)
-        const jsonData = rows?.map(row => {
-            const json = {};
-            row.forEach(col => {
-                json[col.metadata.colName] = col.value
-            })
-            return json;
-        }) || [];
-        console.log(jsonData.length);
-        console.timeEnd('Query Time');
-        // json
-    });
-    request.setTimeout(45000);
-    connection.execSql(request);
+async function queryTable(connection, query) {
+    return new Promise((res, rej) => {
+        console.time('Query Time');
+        // const query = `SELECT
+        //     TOP 1000 *
+        //     FROM
+        //         OPENROWSET(
+        //             BULK 'https://ygazuredatalake.dfs.core.windows.net/ygdatalakesfile/changes/**',
+        //             FORMAT = 'PARQUET'
+        //         ) AS [result] WHERE result.[file] LIKE 'DEPTH' AND changeType = 2`
+        let jsonData;
+        var request = new Request(query, function(err, rowCount, rows) {
+            console.log(err, rowCount, rows)
+            jsonData = rows?.map(row => {
+                const json = {};
+                row.forEach(col => {
+                    json[col.metadata.colName] = col.value
+                })
+                return json;
+            }) || [];
+            console.log(jsonData.length);
+            console.timeEnd('Query Time');
+            // json
+        });
+        request.setTimeout(45000);
+        connection.execSql(request);
+        request.on('requestCompleted', () => {
+            res(jsonData);
+        })
+    })
 }
 
 // main();
@@ -146,6 +138,29 @@ async function insertData() {
     // request.setTimeout(45000);
     // connection.execSql(request);
 }
+
+async function createPartitionViews() {
+    const connection = await connect();
+    const query = `CREATE VIEW cbs_changes_prt_view
+        AS SELECT *, results.filepath(1) AS [workingenvironmentid], results.filepath(2) AS [volumeid], results.filepath(3) AS [snapshotid]
+        FROM
+        OPENROWSET(
+            BULK '/changes/workingenvironmentid=*/volumeid=*/snapshotid=*/**',
+            DATA_SOURCE = 'ygdatalakesfile_ygazuredatalake_dfs_core_windows_net',
+            FORMAT='PARQUET'
+        ) AS results`;
+  
+    var request = new Request(query, function(err, rowCount, rows) {
+        console.log(err, rowCount, rows)
+    });
+    request.setTimeout(45000);
+    connection.execSql(request);
+    request.on('requestCompleted', () => {
+        connection.close()
+    })
+}
+
+// createPartitionViews()
 
 // insertData();
 module.exports = {

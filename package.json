@@ -4,6 +4,7 @@
   "description": "A playgroud project to try different things",
   "main": "app.js",
   "scripts": {
+    "watch": "nodemon app",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Yashendra Goyal",
@@ -14,6 +15,9 @@
     "@azure/storage-blob": "^12.9.0",
     "@azure/synapse-access-control": "^1.0.0-beta.3",
     "@azure/synapse-artifacts": "^1.0.0-beta.10",
+    "ejs": "^3.1.8",
+    "express": "^4.18.1",
+    "nodemon": "^2.0.16",
     "parquetjs": "^0.11.2",
     "parquets": "^0.10.10",
     "tedious": "^14.5.0"

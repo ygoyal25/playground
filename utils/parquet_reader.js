@@ -90,8 +90,8 @@ async function main() {
         await reader.close();
     }
 }
-main()
-// queryTable()
+// main()
+queryTable()
 
 function execQuery(connection, query) {
     return new Promise((res, rej) => {
