@@ -19,17 +19,28 @@ async function main() {
         ,[fileType]
         ,[changeType]
         ,[size]
-        ,[workingEnvironmentId]
-        ,[volumeId]
-        ,[snapshotId]
+        ,[workingenvironmentid]
+        ,[volumeid]
+        ,[snapshotid]
         FROM [dbo].[cbs_changes_prt_view] WHERE`;
         
         for(const key in req.query) {
             const val = req.query[key];
-            if (key === 'file') {
-                query += ` [file] LIKE '%${val}%'`;
-            } else {
-                query += `AND [${key}] = ${val}`
+            switch (key) {
+                case 'file':
+                    query += ` [file] LIKE '%${val}%'`;
+                    break;
+                case 'fileType':
+                case 'changeType':
+                case 'size':
+                    query += ` AND [${key}] = ${val}`
+                    break;
+                case 'extension':
+                case 'workingenvironmentid':
+                    query += ` AND [${key}] = '${val}'`
+                    break;
+                default:
+                    query += ` AND [${key}] = ${val}`
             }
         }
         
