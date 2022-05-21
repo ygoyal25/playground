@@ -3,7 +3,6 @@ const { connect, queryTable } = require('./utils/synapse_connect');
 const app = express();
 
 async function main() {
-    const connection = await connect();
     app.set('view engine', 'ejs');
     app.set('views', './views');
     app.use('/static', express.static('public'));
@@ -13,6 +12,7 @@ async function main() {
     })
 
     app.get('/search', async function(req, res) {
+        const connection = await connect();
         console.log(req.query);
         let query = `SELECT TOP (1000) [file]
         ,[extension]

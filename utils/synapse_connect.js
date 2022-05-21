@@ -58,6 +58,7 @@ async function queryTable(connection, query) {
         request.setTimeout(45000);
         connection.execSql(request);
         request.on('requestCompleted', () => {
+            connection.close();
             res(jsonData);
         })
     })
