@@ -24,16 +24,6 @@ async function main() {
         ,[volumeid]
         ,[snapshotid]
         FROM [dbo].[cbs_changes_prt_view]
-        WITH (
-            [file] varchar(100) COLLATE Latin1_General_100_BIN2_UTF8,
-            extension varchar(20) COLLATE Latin1_General_100_BIN2_UTF8,
-            changeType bigint,
-            size bigint,
-            crtime DATETIME2,
-            workingEnvironmentId varchar(36) COLLATE Latin1_General_100_BIN2_UTF8,
-            volumeId varchar(36) COLLATE Latin1_General_100_BIN2_UTF8,
-            snapshotId varchar(36) COLLATE Latin1_General_100_BIN2_UTF8
-        )
         `;
 
 

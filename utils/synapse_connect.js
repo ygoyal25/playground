@@ -148,7 +148,19 @@ async function createPartitionViews() {
             BULK '/changes/workingenvironmentid=*/volumeid=*/snapshotid=*/**',
             DATA_SOURCE = 'ygdatalakesfile_ygazuredatalake_dfs_core_windows_net',
             FORMAT='PARQUET'
-        ) AS results`;
+        )
+        WITH (
+            [file] varchar(100) COLLATE Latin1_General_100_BIN2_UTF8,
+            extension varchar(20) COLLATE Latin1_General_100_BIN2_UTF8,
+            fileType bigint,
+            changeType bigint,
+            inode bigint,
+            size bigint,
+            ctime datetime2,
+            mtime datetime2,
+            crtime datetime2
+        )
+        AS results`;
   
     var request = new Request(query, function(err, rowCount, rows) {
         console.log(err, rowCount, rows)
