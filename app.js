@@ -38,28 +38,33 @@ async function main() {
 
 
         if (Object.keys(req.query).length) {
-            query += ' WHERE';
+            query += ' WHERE ';
         }
 
         
+        let condAdded = false;
         for(const key in req.query) {
             const val = req.query[key];
+            if (condAdded) {
+                query += ' AND ';
+            }
             switch (key) {
                 case 'file':
-                    query += ` [file] LIKE '%${val}%'`;
+                    query += `[file] LIKE '%${val}%'`;
                     break;
                 case 'fileType':
                 case 'changeType':
                 case 'size':
-                    query += ` AND [${key}] = ${val}`
+                    query += `[${key}] = ${val}`
                     break;
                 case 'extension':
                 case 'workingenvironmentid':
-                    query += ` AND [${key}] = '${val}'`
+                    query += `[${key}] = '${val}'`
                     break;
                 default:
-                    query += ` AND [${key}] = ${val}`
+                    query += `[${key}] = ${val}`
             }
+            condAdded = true;
         }
         
         console.log(query);
