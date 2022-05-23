@@ -23,7 +23,7 @@ async function main() {
         ,[workingenvironmentid]
         ,[volumeid]
         ,[snapshotid]
-        FROM [dbo].[cbs_changes_prt_view]
+        FROM [dbo].[changes_view]
         `;
 
 

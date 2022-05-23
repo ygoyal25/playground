@@ -140,6 +140,17 @@ async function insertData() {
 }
 
 async function createPartitionViews() {
+/**
+ *  We might need to create external data source
+    IF NOT EXISTS (SELECT * FROM sys.external_data_sources WHERE name = 'azuredatalakefiles_azuredatalakecatalog_dfs_core_windows_net') 
+	CREATE EXTERNAL DATA SOURCE [azuredatalakefiles_azuredatalakecatalog_dfs_core_windows_net] 
+	WITH (
+		LOCATION = 'abfss://azuredatalakefiles@azuredatalakecatalog.dfs.core.windows.net' 
+	)
+ */
+
+
+
     const connection = await connect();
     const query = `CREATE VIEW cbs_changes_prt_view
         AS SELECT *, results.filepath(1) AS [workingenvironmentid], results.filepath(2) AS [volumeid], results.filepath(3) AS [snapshotid]
