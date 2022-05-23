@@ -8,11 +8,6 @@ function search() {
     loader.setAttribute('style', 'display: block');
     const file = document.querySelector('#search').value;
 
-    if (!file) {
-        alert('Please Enter file Name');
-        return
-    }
-
     const fileType = document.querySelector('#fileType').value;
     const extension = document.querySelector('#extension').value;
     const workingenvironmentid = document.querySelector('#workingenvironmentid').value;
@@ -24,7 +19,11 @@ function search() {
         workingenvironmentid
     });
 
-    let url = `/search?file=${file}`;
+    let url = '/search?';
+
+    if (file) {
+        url += `file=${file}`;
+    }
 
     if(fileType !== 'All') {
         url += `&fileType=${fileType}`

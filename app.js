@@ -22,7 +22,13 @@ async function main() {
         ,[workingenvironmentid]
         ,[volumeid]
         ,[snapshotid]
-        FROM [dbo].[cbs_changes_prt_view] WHERE`;
+        FROM [dbo].[cbs_changes_prt_view]`;
+
+
+        if (Object.keys(req.query).length) {
+            query += ' WHERE';
+        }
+
         
         for(const key in req.query) {
             const val = req.query[key];
