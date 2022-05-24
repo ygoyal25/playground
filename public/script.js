@@ -2,9 +2,15 @@ const loader = document.getElementsByClassName('loader')[0];
 function search() {
     console.log('Searching...');
     var tbl = document.getElementsByTagName('table')[0];
+    var time_para = document.getElementsByClassName('time_para')[0];
     if (tbl) {
         tbl.remove();
     }
+
+    if (time_para) {
+        time_para.remove();
+    }
+
     loader.setAttribute('style', 'display: block');
     const file = document.querySelector('#search').value;
 
@@ -37,21 +43,31 @@ function search() {
         url += `&workingenvironmentid=${workingenvironmentid}`
     }
 
+    const startTime = new Date().getTime();
+    let timeTaken;
     fetch(url)
     .then(data => {
+        timeTaken = (new Date().getTime() - startTime) / 1000;
         return data.json()
     })
     .then(json => {        
-        tableCreate(json.data);
+        tableCreate(json.data, timeTaken);
     })
     .catch(e => {
+        endTime = new Date().getTime();
         console.log(e);
     })
 }
 
-function tableCreate(data) {
+function tableCreate(data, timeTaken) {
+
+    const p = document.createElement('p');
+    p.setAttribute('class', 'time_para');
+    p.innerText = `Fetched ${data.length} records in ${timeTaken} seconds`;
+
     loader.setAttribute('style', 'display: none');
     var body = document.getElementsByTagName('body')[0];
+    body.appendChild(p);
     var tbl = document.createElement('table');
     tbl.setAttribute('class', 'table');
     tbl.style.width = '100%';
