@@ -14,9 +14,30 @@ function search() {
     loader.setAttribute('style', 'display: block');
     const file = document.querySelector('#search').value;
 
-    const fileType = document.querySelector('#fileType').value;
-    const extension = document.querySelector('#extension').value;
-    const workingenvironmentid = document.querySelector('#workingenvironmentid').value;
+    const fileType = [];
+    const fileTypeOptions = document.querySelector('#fileType').options;
+    for(var i = 0; i < fileTypeOptions.length; i++) {
+        if (fileTypeOptions[i].selected) {
+            fileType.push(fileTypeOptions[i].value);
+        }    
+    }
+
+    const extensionOptions = document.querySelector('#extension').options;
+    const extension = [];
+    for(var i = 0; i < extensionOptions.length; i++) {
+        if (extensionOptions[i].selected) {
+            extension.push(extensionOptions[i].value);
+        }    
+    }
+
+    const workingenvironmentidOptions = document.querySelector('#workingenvironmentid').options;
+    const workingenvironmentid = [];
+    for(var i = 0; i < workingenvironmentidOptions.length; i++) {
+        if (workingenvironmentidOptions[i].selected) {
+            workingenvironmentid.push(workingenvironmentidOptions[i].value);
+        }    
+    }
+
 
     console.log({
         file,
@@ -31,16 +52,16 @@ function search() {
         url += `file=${file}`;
     }
 
-    if(fileType !== 'All') {
-        url += `&fileType=${fileType}`
+    if(fileType.length) {
+        url += `&fileType=${fileType.join(',')}`
     }
 
-    if (extension !== 'All') {
-        url += `&extension=${extension}`
+    if (extension.length) {
+        url += `&extension=${extension.join(',')}`
     }
 
-    if (workingenvironmentid !== 'All') {
-        url += `&workingenvironmentid=${workingenvironmentid}`
+    if (workingenvironmentid.length) {
+        url += `&workingenvironmentid=${workingenvironmentid.join(',')}`
     }
 
     const startTime = new Date().getTime();

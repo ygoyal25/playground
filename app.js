@@ -45,11 +45,11 @@ async function main() {
                 case 'fileType':
                 case 'changeType':
                 case 'size':
-                    query += `[${key}] = ${val}`
+                    query += `[${key}] IN [${val.split(',').map(v => Number(v))}]`
                     break;
                 case 'extension':
                 case 'workingenvironmentid':
-                    query += `[${key}] = '${val}'`
+                    query += `[${key}] IN ['${val.split(',')}']`
                     break;
                 default:
                     query += `[${key}] = ${val}`
