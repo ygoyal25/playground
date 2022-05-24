@@ -19,7 +19,6 @@ async function main() {
         ,[fileType]
         ,[changeType]
         ,[size]
-        ,[crtime]
         ,[workingenvironmentid]
         ,[volumeid]
         ,[snapshotid]
@@ -45,11 +44,11 @@ async function main() {
                 case 'fileType':
                 case 'changeType':
                 case 'size':
-                    query += `[${key}] IN [${val.split(',').map(v => Number(v))}]`
+                    query += `[${key}] IN (${val.split(',').map(v => Number(v))})`
                     break;
                 case 'extension':
                 case 'workingenvironmentid':
-                    query += `[${key}] IN ['${val.split(',')}']`
+                    query += `[${key}] IN ('${val.split(',')}')`
                     break;
                 default:
                     query += `[${key}] = ${val}`
