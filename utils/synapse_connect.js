@@ -149,6 +149,29 @@ async function createPartitionViews() {
 	)
  */
 
+    /**
+     * CREATE VIEW cbs_changes_azuredatalakecatalog_sa
+        AS SELECT *, results.filepath(1) AS [workingenvironmentid], results.filepath(2) AS [volumeid], results.filepath(3) AS [snapshotid]
+        FROM
+        OPENROWSET(
+            BULK '/changes/workingenvironmentid=*/volumeid=*/snapshotid=*/**',
+            DATA_SOURCE = 'azuredatalakefiles_azuredatalakecatalog_dfs_core_windows_net',
+            FORMAT='PARQUET'
+        )
+        WITH (
+            [file] varchar(100) COLLATE Latin1_General_100_BIN2_UTF8,
+            extension varchar(20) COLLATE Latin1_General_100_BIN2_UTF8,
+            fileType smallint,
+            changeType smallint,
+            inode bigint,
+            size bigint,
+            ctime datetime2,
+            mtime datetime2,
+            crtime datetime2
+        )
+        AS results
+    */
+
 
 
     const connection = await connect();

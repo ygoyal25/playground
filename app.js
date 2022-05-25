@@ -22,7 +22,7 @@ async function main() {
         ,[workingenvironmentid]
         ,[volumeid]
         ,[snapshotid]
-        FROM [dbo].[changes_view]
+        FROM [dbo].[cbs_changes_azuredatalakecatalog_sa_ci]
         `;
 
 
