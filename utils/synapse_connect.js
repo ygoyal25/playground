@@ -159,8 +159,8 @@ async function createPartitionViews() {
     //         FORMAT='PARQUET'
     //     )
     //     WITH (
-    //         [file] varchar(100) COLLATE Latin1_General_100_BIN2_UTF8,
-    //         extension varchar(20) COLLATE Latin1_General_100_BIN2_UTF8,
+    //         [file] varchar(100) COLLATE SQL_Latin1_General_CP1_CI_AS,
+    //         extension varchar(20) COLLATE SQL_Latin1_General_CP1_CI_AS,
     //         fileType smallint,
     //         changeType smallint,
     //         inode bigint,
@@ -171,6 +171,7 @@ async function createPartitionViews() {
     //     )
     //     AS results
 
+    //--------------- USE THIS COLLATE SQL_Latin1_General_CP1_CI_AS instead of Latin1_General_100_BIN2_UTF8 -------------
 
 
     const connection = await connect();
@@ -183,8 +184,8 @@ async function createPartitionViews() {
             FORMAT='PARQUET'
         )
         WITH (
-            [file] varchar(100) COLLATE Latin1_General_100_BIN2_UTF8,
-            extension varchar(20) COLLATE Latin1_General_100_BIN2_UTF8,
+            [file] varchar(100) COLLATE SQL_Latin1_General_CP1_CI_AS,
+            extension varchar(20) COLLATE SQL_Latin1_General_CP1_CI_AS,
             fileType bigint,
             changeType bigint,
             inode bigint,
