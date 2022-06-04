@@ -3,17 +3,19 @@ async function connect() {
     console.log('Starting...');
     return new Promise((res, rej) => {
         const config = { 
-            server: 'yg-synapse-workspace-ondemand.sql.azuresynapse.net',
+            server: 'yg-azure-poc-ws-ondemand.sql.azuresynapse.net',
             authentication: { 
-                // type: 'default', 
+                // type: 'default',
                 type: 'azure-active-directory-default',
                 options: { 
-                    // token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6ImpTMVhvMU9XRGpfNTJ2YndHTmd2UU8yVnpNYyIsImtpZCI6ImpTMVhvMU9XRGpfNTJ2YndHTmd2UU8yVnpNYyJ9.eyJhdWQiOiJodHRwczovL21hbmFnZW1lbnQuY29yZS53aW5kb3dzLm5ldC8iLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC81MWI3ZjM5MS05M2Q4LTRlZmUtOGYyNi1kNTMyNThhNzc2MTkvIiwiaWF0IjoxNjUyOTM5NDg3LCJuYmYiOjE2NTI5Mzk0ODcsImV4cCI6MTY1Mjk0NTEzMCwiYWNyIjoiMSIsImFpbyI6IkFXUUFtLzhUQUFBQS9PYngxb3BwbVVtYkpYeDZOeHdaVXM3S09vQ1kwL2JhdUNJSkNuME83MTk4YTdzTHNNNnVYZlRSaWFZdGkrQnNPWTJIdDFQOXJ5dlUzQjdVUi95M3JWelJpMGJxMmdaUTZDNUl0M2llMDN5L3N5MWFVeFNIaVBZTkkzZGc3c1V4IiwiYWx0c2VjaWQiOiIxOmxpdmUuY29tOjAwMDM3RkZFMEQ3OUFDNkUiLCJhbXIiOlsicHdkIiwibWZhIl0sImFwcGlkIjoiMDRiMDc3OTUtOGRkYi00NjFhLWJiZWUtMDJmOWUxYmY3YjQ2IiwiYXBwaWRhY3IiOiIwIiwiZW1haWwiOiJnb3lhbC55YXNoZW5kcmFAZ21haWwuY29tIiwiZmFtaWx5X25hbWUiOiJHb3lhbCIsImdpdmVuX25hbWUiOiJZYXNoZW5kcmEiLCJncm91cHMiOlsiMmEzYjZhOWQtMzY5Mi00OTIxLWIwYmEtMzI3MWI1N2Q5MWE0Il0sImlkcCI6ImxpdmUuY29tIiwiaXBhZGRyIjoiNDkuMjA3LjE5NC4xMDciLCJuYW1lIjoiWWFzaGVuZHJhIEdveWFsIiwib2lkIjoiMzRjYjE1ZjktNzkzMC00MjE4LThlNGMtNDZiZWNhOTI2NzMwIiwicHVpZCI6IjEwMDMyMDAxRjU2NDA2MTgiLCJyaCI6IjAuQVZVQWtmTzNVZGlUX2s2UEp0VXlXS2QyR1VaSWYza0F1dGRQdWtQYXdmajJNQk9JQUlrLiIsInNjcCI6InVzZXJfaW1wZXJzb25hdGlvbiIsInN1YiI6InktWmIySFF3dGQzRENXdGhNNXQyZzVfdTF6T1pQRWdWOTlvU0JrYnhTakUiLCJ0aWQiOiI1MWI3ZjM5MS05M2Q4LTRlZmUtOGYyNi1kNTMyNThhNzc2MTkiLCJ1bmlxdWVfbmFtZSI6ImxpdmUuY29tI2dveWFsLnlhc2hlbmRyYUBnbWFpbC5jb20iLCJ1dGkiOiJFbzI4MXNFa0JrQ3JLczJObmxvbUFBIiwidmVyIjoiMS4wIiwid2lkcyI6WyI2MmU5MDM5NC02OWY1LTQyMzctOTE5MC0wMTIxNzcxNDVlMTAiLCJiNzlmYmY0ZC0zZWY5LTQ2ODktODE0My03NmIxOTRlODU1MDkiXSwieG1zX3RjZHQiOjE2NTEyOTg2MDd9.gvJAl9jDJTlu_ZGpB9VqUiDsqeoEQfu5uiTob8ug0nYxZYEmYbNGLXAwx1CA4katyQvgy6d9tO22Ou-SlUO0XjXNqh-92PUQ6zQjbBKcXfo8f-jI21MwZa6orYizFaAYsuziIwm63I2av155_QCXwr3ngQkLh8-avf0-U0q141m_ZHAkYOasp2uIvve2tY3zakGDW__EDw19ji99kDIXZTRZnnB894yvonT7GTBup04Fcz0iFtM82hDQyS79OOozubtycYVzsIbKvBi-SGoSwU8H7W3UhogEwMb16Gj3BNdbDl6q9uBopi9fyTnF9_2SRXffpq1jcTxfoRaCrJVRqw'
+                    // token: ''
+                    // userName: 'sqladminuser',
+                    // password: 'Netapp123'
                 }
             }, 
             options: {
                 encrypt: true, 
-                database: 'cbs_changes',
+                database: 'yg_catalog_poc',
                 rowCollectionOnRequestCompletion: true
             } 
         };
@@ -43,7 +45,7 @@ async function queryTable(connection, query) {
         //         ) AS [result] WHERE result.[file] LIKE 'DEPTH' AND changeType = 2`
         let jsonData;
         var request = new Request(query, function(err, rowCount, rows) {
-            // console.log(err, rowCount, rows)
+            console.log({ query, err, rowCount, rows });
             jsonData = rows?.map(row => {
                 const json = {};
                 row.forEach(col => {
@@ -175,8 +177,11 @@ async function createPartitionViews() {
 
 
     const connection = await connect();
-    const query = `CREATE VIEW cbs_changes_prt_view
-        AS SELECT *, results.filepath(1) AS [workingenvironmentid], results.filepath(2) AS [volumeid], results.filepath(3) AS [snapshotid]
+    const query = `CREATE VIEW cbs_changes_ygazuredatalake_sa_ci
+        AS SELECT *,
+        CAST(results.filepath(1) AS VARCHAR(40)) AS [workingenvironmentid], 
+        CAST(results.filepath(2) AS VARCHAR(40)) AS [volumeid], 
+        CAST(results.filepath(3) AS VARCHAR(40)) AS [snapshotid]
         FROM
         OPENROWSET(
             BULK '/changes/workingenvironmentid=*/volumeid=*/snapshotid=*/**',
@@ -210,5 +215,5 @@ async function createPartitionViews() {
 
 // insertData();
 module.exports = {
-    connect, queryTable, createTable
+    connect, queryTable, createTable, createPartitionViews
 }
