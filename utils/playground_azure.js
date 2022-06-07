@@ -2,7 +2,7 @@ const { AccessControlClient } = require("@azure/synapse-access-control");
 const { DefaultAzureCredential, logger } = require("@azure/identity");
 const { SynapseManagementClient } = require('@azure/arm-synapse');
 const { StorageManagementClient } = require('@azure/arm-storage');
-const { BlobServiceClient } = require("@azure/storage-blob");
+const { BlobServiceClient, StorageSharedKeyCredential } = require("@azure/storage-blob");
 const { ArtifactsClient } = require('@azure/synapse-artifacts');
 const { connect, queryTable } = require("./synapse_connect");
 const axios = require('axios').default;
@@ -12,7 +12,7 @@ const resourceGroupName = "my_azure_rg";
 
 const workspaceName = 'yg-synapse-workspace';
 
-const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6ImpTMVhvMU9XRGpfNTJ2YndHTmd2UU8yVnpNYyIsImtpZCI6ImpTMVhvMU9XRGpfNTJ2YndHTmd2UU8yVnpNYyJ9.eyJhdWQiOiJodHRwczovL21hbmFnZW1lbnQuY29yZS53aW5kb3dzLm5ldC8iLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC81MWI3ZjM5MS05M2Q4LTRlZmUtOGYyNi1kNTMyNThhNzc2MTkvIiwiaWF0IjoxNjU0MTU4NzgxLCJuYmYiOjE2NTQxNTg3ODEsImV4cCI6MTY1NDE2MzA5MSwiYWNyIjoiMSIsImFpbyI6IkFXUUFtLzhUQUFBQWU3NXhMVTM4d0Z3ck1JbDlIbmx5NGQ2cnJxUzJXdmFSUEMxeGNNWEVuaUdBS21wWC8wQWlsaDJiZE9IUGJTMGdSRGtCelBTd0tsdXFWQllDVXpUTjdMb1kxQXVBcGR4bWxLTzg1UTVHSlg5ZWVhL1dKbXBoZ29NcTViQXYyQjg4IiwiYWx0c2VjaWQiOiIxOmxpdmUuY29tOjAwMDM3RkZFMEQ3OUFDNkUiLCJhbXIiOlsicHdkIiwibWZhIl0sImFwcGlkIjoiMDRiMDc3OTUtOGRkYi00NjFhLWJiZWUtMDJmOWUxYmY3YjQ2IiwiYXBwaWRhY3IiOiIwIiwiZW1haWwiOiJnb3lhbC55YXNoZW5kcmFAZ21haWwuY29tIiwiZmFtaWx5X25hbWUiOiJHb3lhbCIsImdpdmVuX25hbWUiOiJZYXNoZW5kcmEiLCJncm91cHMiOlsiMmEzYjZhOWQtMzY5Mi00OTIxLWIwYmEtMzI3MWI1N2Q5MWE0Il0sImlkcCI6ImxpdmUuY29tIiwiaXBhZGRyIjoiNDkuMjA3LjIxMy4yMjQiLCJuYW1lIjoiWWFzaGVuZHJhIEdveWFsIiwib2lkIjoiMzRjYjE1ZjktNzkzMC00MjE4LThlNGMtNDZiZWNhOTI2NzMwIiwicHVpZCI6IjEwMDMyMDAxRjU2NDA2MTgiLCJyaCI6IjAuQVZVQWtmTzNVZGlUX2s2UEp0VXlXS2QyR1VaSWYza0F1dGRQdWtQYXdmajJNQk9JQUlrLiIsInNjcCI6InVzZXJfaW1wZXJzb25hdGlvbiIsInN1YiI6InktWmIySFF3dGQzRENXdGhNNXQyZzVfdTF6T1pQRWdWOTlvU0JrYnhTakUiLCJ0aWQiOiI1MWI3ZjM5MS05M2Q4LTRlZmUtOGYyNi1kNTMyNThhNzc2MTkiLCJ1bmlxdWVfbmFtZSI6ImxpdmUuY29tI2dveWFsLnlhc2hlbmRyYUBnbWFpbC5jb20iLCJ1dGkiOiJqaktyeEJXU3QwLW51TnRLYndJWkFRIiwidmVyIjoiMS4wIiwid2lkcyI6WyI2MmU5MDM5NC02OWY1LTQyMzctOTE5MC0wMTIxNzcxNDVlMTAiLCJiNzlmYmY0ZC0zZWY5LTQ2ODktODE0My03NmIxOTRlODU1MDkiXSwieG1zX3RjZHQiOjE2NTEyOTg2MDd9.AlYUw-tLzf3gwCEOaM6cJ7LHfabwlBdmn0dsEoBK_pfQbGDCBcdYmWWqJ2gNyiSVZL5dCMbsW8SySGyyLqnNrru8DMiI7G-MGz43w4d9rDxXIM6zPOK7QVmdjQEgaeNBl_InKkL4T4aMR8wdEQa0o6GMTWSSPuz3iZPfbCczavVWPXyA7lvZkYGWoFtmkDh4KL3bXbVMT4BrsC8SIUgNv4eIpg0YDyhjGqXKoRPd0_-KfvVghMYRl8p0DdZ3zmlxXcZK4ztdokgvr20_jGtSVoVcifD2PN6Fl2zZiL9vndKy3MX0cM_EBhkeynu05x79ZbxWCw1zdKkcFjTKmWPqyQ';
+const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6ImpTMVhvMU9XRGpfNTJ2YndHTmd2UU8yVnpNYyIsImtpZCI6ImpTMVhvMU9XRGpfNTJ2YndHTmd2UU8yVnpNYyJ9.eyJhdWQiOiJodHRwczovL21hbmFnZW1lbnQuY29yZS53aW5kb3dzLm5ldC8iLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC81MWI3ZjM5MS05M2Q4LTRlZmUtOGYyNi1kNTMyNThhNzc2MTkvIiwiaWF0IjoxNjU0NDEwNzA0LCJuYmYiOjE2NTQ0MTA3MDQsImV4cCI6MTY1NDQxNDYxNCwiYWNyIjoiMSIsImFpbyI6IkFXUUFtLzhUQUFBQS9PYngxb3BwbVVtYkpYeDZOeHdaVXM3S09vQ1kwL2JhdUNJSkNuME83MTk4YTdzTHNNNnVYZlRSaWFZdGkrQnNIZVgxMUNWN09nMklXTXhJdEJlNHhqa0ZwaS82R3hIa3hZa21hN0lNZThjRU5LSm1QZjBFV1hvYloxbHFabTBkIiwiYWx0c2VjaWQiOiIxOmxpdmUuY29tOjAwMDM3RkZFMEQ3OUFDNkUiLCJhbXIiOlsicHdkIiwibWZhIl0sImFwcGlkIjoiMDRiMDc3OTUtOGRkYi00NjFhLWJiZWUtMDJmOWUxYmY3YjQ2IiwiYXBwaWRhY3IiOiIwIiwiZW1haWwiOiJnb3lhbC55YXNoZW5kcmFAZ21haWwuY29tIiwiZmFtaWx5X25hbWUiOiJHb3lhbCIsImdpdmVuX25hbWUiOiJZYXNoZW5kcmEiLCJncm91cHMiOlsiMmEzYjZhOWQtMzY5Mi00OTIxLWIwYmEtMzI3MWI1N2Q5MWE0Il0sImlkcCI6ImxpdmUuY29tIiwiaXBhZGRyIjoiNDkuMjA3LjIwMi45NyIsIm5hbWUiOiJZYXNoZW5kcmEgR295YWwiLCJvaWQiOiIzNGNiMTVmOS03OTMwLTQyMTgtOGU0Yy00NmJlY2E5MjY3MzAiLCJwdWlkIjoiMTAwMzIwMDFGNTY0MDYxOCIsInJoIjoiMC5BVlVBa2ZPM1VkaVRfazZQSnRVeVdLZDJHVVpJZjNrQXV0ZFB1a1Bhd2ZqMk1CT0lBSWsuIiwic2NwIjoidXNlcl9pbXBlcnNvbmF0aW9uIiwic3ViIjoieS1aYjJIUXd0ZDNEQ1d0aE01dDJnNV91MXpPWlBFZ1Y5OW9TQmtieFNqRSIsInRpZCI6IjUxYjdmMzkxLTkzZDgtNGVmZS04ZjI2LWQ1MzI1OGE3NzYxOSIsInVuaXF1ZV9uYW1lIjoibGl2ZS5jb20jZ295YWwueWFzaGVuZHJhQGdtYWlsLmNvbSIsInV0aSI6IkY3UDFOYWYyeGtDelJ0cXRwQW9tQUEiLCJ2ZXIiOiIxLjAiLCJ3aWRzIjpbIjYyZTkwMzk0LTY5ZjUtNDIzNy05MTkwLTAxMjE3NzE0NWUxMCIsImI3OWZiZjRkLTNlZjktNDY4OS04MTQzLTc2YjE5NGU4NTUwOSJdLCJ4bXNfdGNkdCI6MTY1MTI5ODYwN30.OX6Qrv-rULceUaIFmvWhbdXbKuzw4cNPzaAmRwGevoi-xKBR1NZNGJBbL5w4Ehsauw6wGhGG5FLqTQtmeePdnvoPgX5J9i8KblYV3KUkUjEQ0VynvEmn0O2ZxhCyXbLUWFaf5RSVqtxUtjygPa3KKwz2xzVd1RUBAXu8ZSTcc4bwRFqBv1jm6PrFnbJqwiD-4fW2G_vITLFp1i4u322bH4yZAtCdL8JRvmF0-EIFoorzVJWd_86I0fwj94iRcDryIyLKRtEx4espRLiB_MOw0VBgCXX99oo3hJJREc1NWsNe5UuIqfgGEueZa2HFjsTRwGkgB8uVAL1Z5MPNFFdNzA';
 
 const url = `https://management.azure.com/subscriptions/${subscriptionId}/resourceGroups/${resourceGroupName}/providers/Microsoft.Synapse/workspaces/${workspaceName}?api-version=2021-06-01`
 
@@ -71,6 +71,12 @@ async function getStorageManagementClient() {
     return new StorageManagementClient(credentials, subscriptionId);
 }
 
+async function getBlobServiceClient(account, accountKey) {
+    const sharedKeyCredential = new StorageSharedKeyCredential(account, accountKey);
+
+    return new BlobServiceClient(`https://${account}.blob.core.windows.net`, sharedKeyCredential);
+}
+
 async function getSynapseWorkspaces() {
     const client = await getSynapseManagementClient();
 
@@ -105,6 +111,22 @@ async function createStorageAccount() {
 
     // const { keys } = await client.storageAccounts.listKeys(resourceGroupName, accName);
     // const blobClient = new BlobServiceClient()
+}
+
+async function listStorageAccountKeys(subscription, resourceGroup, accountName) {
+    const client = await getStorageManagementClient();
+
+    const keys = await client.storageAccounts.listKeys(resourceGroupName, accountName);
+    return keys;
+}
+
+async function createStorageAccountContainer() {
+    const { keys } = await listStorageAccountKeys(subscriptionId, resourceGroupName, 'ygazurepocsa');
+    const blobClient = await getBlobServiceClient('ygazurepocsa', keys[0].value);
+
+    const containerClient = blobClient.getContainerClient('myfilecontainer');
+    const resp = await containerClient.create();
+    console.log(resp);
 }
 
 
@@ -172,7 +194,8 @@ async function main() {
     console.log(data);
 }
 
-main()
+// main()
+createStorageAccountContainer()
 // createStorageAccount();
 // createSynapseWorkspace();
 // getSynapseWorkspaces();
